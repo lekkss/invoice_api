@@ -14,8 +14,8 @@ const auth = async (req, res, next) => {
     const decoded = Jwt.verify(token, process.env.JWT_SECRET);
     // const user = User.findById(decoded.id).select("-password");
     // req.user = user;
-    const { id, username } = decoded;
-    req.user = { id, username };
+    const { id, email } = decoded;
+    req.user = { id, email };
     next();
   } catch (error) {
     throw new UnauthenticatedError("Authentication invalid");

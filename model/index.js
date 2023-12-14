@@ -2,6 +2,7 @@ import mysql from "mysql2";
 import { dbConfig } from "../config/db-config.js";
 import Sequelize from "sequelize";
 const { DATABASE, DIALECT, HOST, PASSWORD, USER } = dbConfig;
+import User from "./user.js";
 
 //Create database if not exist
 const createDatabaseConnection = async () => {
@@ -27,6 +28,8 @@ const sequelize = new Sequelize(DATABASE, USER, PASSWORD, {
 const db = {};
 db.sequelize = sequelize;
 
-db.models = {};
+db.models = {
+  User: User(sequelize, Sequelize.DataTypes),
+};
 
 export { db };
