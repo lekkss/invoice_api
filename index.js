@@ -13,6 +13,7 @@ import errorHandler from "./middleware/error-handler.js";
 
 //routes
 import authRoute from "./route/auth.js";
+import userRoute from "./route/user.js";
 const app = express();
 
 //parse url encoded bodies
@@ -23,6 +24,7 @@ app.use(express.json());
 
 //route
 app.use("/auth", authRoute);
+app.use("/profile", userRoute);
 
 // initializing express middlewares
 app.use(notFound);
