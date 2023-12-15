@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import { db } from "../model/index.js";
 import BadRequestError from "../errors/bad-request.js";
 import { sendEmail } from "../util/sendEmail.js";
+import { getAuthorizationUrl } from "../util/paystack.js";
 const { Client, User, Invoice } = db.models;
 
 const createClient = async (req, res) => {
@@ -52,23 +53,35 @@ const getClient = async (req, res) => {
 
 const createInvoice = async (req, res) => {
   const { id } = req.params;
+  const { amount } = req.body;
   const userId = req.user.id;
   const user = await findClientUUID(id, userId);
   const { email, first_name, last_name } = user.dataValues;
   const to = email;
   const subject = `New infoive created for ${first_name}`;
-
+  let url;
   try {
+    await getAuthorizationUrl(email, amount)
+      .then((authorizationUrl) => {
+        url = authorizationUrl;
+      })
+      .catch((error) => {
+        console.error("Error:", error.message);
+      });
     const invoice = await Invoice.create({
       ...req.body,
+      payment_link: url,
       user_id: userId,
       client_id: id,
     });
     const { payment_link, due_date } = invoice.dataValues;
+    console.log(invoice.dataValues.amount);
     const html = `
     <b>Hello ${first_name} ${last_name},</b>
     <p>Find your invoice attached. Please make the payment by ${due_date} using the following link:</p>
-    <a href="https://www.google.com">${payment_link}</a>
+    <b>You are to pay NGN${invoice.dataValues.amount / 100}</b>
+    <p>Use the link below</p>
+    <a href=${payment_link}>${payment_link}</a>
   `;
     sendEmail(to, subject, html);
     res
@@ -118,7 +131,7 @@ async function findInvoice(id, userId) {
   const user = await Invoice.findOne({
     where: { user_id: userId, id: id },
   });
-  if (!user) throw new BadRequestError(`Invice does not exist`);
+  if (!user) throw new BadRequestError(`Invoce does not exist`);
   return user;
 }
 
