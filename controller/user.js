@@ -8,14 +8,7 @@ const getUser = async (req, res) => {
 };
 //helper to find user with id
 async function findUser(id) {
-  const user = await User.findByPk(id, {
-    // include: [
-    //   {
-    //     model: Client,
-    //     include: [Invoice],
-    //   },
-    // ],
-  });
+  const user = await User.findByPk(id);
   if (!user) throw new BadRequestError(`User with does not exist`);
   return user;
 }

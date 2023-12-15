@@ -1,10 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import nodemailer from "nodemailer";
 import { db } from "../model/index.js";
 import BadRequestError from "../errors/bad-request.js";
 import { sendEmail } from "../util/sendEmail.js";
 import { getAuthorizationUrl } from "../util/paystack.js";
-const { Client, User, Invoice } = db.models;
+const { Client, Invoice } = db.models;
 
 const createClient = async (req, res) => {
   const id = req.user.id;
@@ -75,19 +74,26 @@ const createInvoice = async (req, res) => {
       client_id: id,
     });
     const { payment_link, due_date } = invoice.dataValues;
-    console.log(invoice.dataValues.amount);
-    const html = `
-    <b>Hello ${first_name} ${last_name},</b>
-    <p>Find your invoice attached. Please make the payment by ${due_date} using the following link:</p>
-    <b>You are to pay NGN${invoice.dataValues.amount / 100}</b>
-    <p>Use the link below</p>
-    <a href=${payment_link}>${payment_link}</a>
-  `;
-    sendEmail(to, subject, html);
+    const name = `${first_name} ${last_name}`;
+    const date = due_date;
+    const link = payment_link;
+    const template = "invoice";
+    // const amount = invoice.dataValues.amount / 100;
+
+    sendEmail(
+      to,
+      subject,
+      name,
+      link,
+      invoice.dataValues.amount / 100,
+      date,
+      template
+    );
     res
       .status(StatusCodes.CREATED)
       .json({ status: true, message: "Invoice Created Successfully" });
   } catch (error) {
+    console.log("ERROR", error);
     res
       .status(StatusCodes.BAD_GATEWAY)
       .json({ status: false, message: "Error" });

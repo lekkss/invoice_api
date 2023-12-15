@@ -54,10 +54,12 @@ db.models.Client.hasMany(db.models.Invoice, {
 
 db.models.Invoice.belongsTo(db.models.User, {
   foreignKey: "user_id",
+  targetKey: "uuid",
   onDelete: "CASCADE",
 });
 db.models.Invoice.belongsTo(db.models.Client, {
   foreignKey: "client_id",
+  targetKey: "uuid",
   onDelete: "CASCADE",
 });
 

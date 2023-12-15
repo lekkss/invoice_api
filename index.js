@@ -1,4 +1,3 @@
-//
 import "express-async-errors";
 import dotenv from "dotenv";
 dotenv.config();
@@ -7,7 +6,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { db } from "./model/index.js";
 import nodemailer from "nodemailer";
-
+import "./helper/cronJob.js";
 // Error handlers
 import notFound from "./middleware/not-found.js";
 import errorHandler from "./middleware/error-handler.js";

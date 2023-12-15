@@ -6,14 +6,13 @@ const getAuthorizationUrl = (email, amount) => {
       email: email,
       amount: amount,
     });
-
     const options = {
       hostname: "api.paystack.co",
       port: 443,
       path: "/transaction/initialize",
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_API_SECRET_KEY}`, // Replace with your actual Paystack secret key
+        Authorization: `Bearer ${process.env.PAYSTACK_API_SECRET_KEY}`,
         "Content-Type": "application/json",
       },
     };
@@ -40,7 +39,6 @@ const getAuthorizationUrl = (email, amount) => {
     }).on("error", (error) => {
       reject(error);
     });
-
     req.write(params);
     req.end();
   });

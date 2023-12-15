@@ -1,9 +1,10 @@
-// emailService.js
+import hbs from "nodemailer-express-handlebars";
+import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 import nodemailer from "nodemailer";
 
-const sendEmail = async (to, subject, html) => {
+const sendEmail = async (to, subject, name, link, amount, date, template) => {
   const config = {
     service: "gmail",
     auth: {
@@ -14,11 +15,29 @@ const sendEmail = async (to, subject, html) => {
 
   const transporter = nodemailer.createTransport(config);
 
+  const handlebarOptions = {
+    viewEngine: {
+      extName: ".handlebars",
+      partialsDir: path.resolve("./views"),
+      defaultLayout: false,
+    },
+    viewPath: path.resolve("./views"),
+    extName: ".handlebars",
+  };
+
+  transporter.use("compile", hbs(handlebarOptions));
+
   const message = {
     from: "noreply@lekkssservice.com",
     to,
     subject,
-    html,
+    template,
+    context: {
+      name,
+      link,
+      date,
+      amount,
+    },
   };
 
   // Send Email
