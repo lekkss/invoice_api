@@ -8,8 +8,14 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
       },
       client_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
+        references: {
+          model: "client",
+          key: "uuid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       user_id: {
         type: DataTypes.INTEGER,

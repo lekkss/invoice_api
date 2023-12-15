@@ -37,7 +37,7 @@ db.models = {
 };
 
 db.models.User.hasMany(db.models.Client, {
-  foreignKey: "id",
+  foreignKey: "user_id",
 });
 db.models.Client.belongsTo(db.models.User, {
   foreignKey: "user_id",
@@ -45,11 +45,11 @@ db.models.Client.belongsTo(db.models.User, {
 });
 
 db.models.User.hasMany(db.models.Invoice, {
-  foreignKey: "id",
+  foreignKey: "user_id",
 });
 
 db.models.Client.hasMany(db.models.Invoice, {
-  foreignKey: "id",
+  foreignKey: "client_id",
 });
 
 db.models.Invoice.belongsTo(db.models.User, {
