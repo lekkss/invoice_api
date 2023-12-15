@@ -46,7 +46,7 @@ const login = async (req, res) => {
     return res.status(StatusCodes.OK).json({
       status: true,
       message: "Login successful",
-      data: { user: { ...omitPassword(user.get()) }, token: token },
+      data: { user: { ...omitPassword(user.get()) }, token: token, id },
     });
   }
 };
