@@ -2,26 +2,26 @@ import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../util/index.js";
 import { BadRequestError } from "../errors/index.js";
-import { db } from "../model/index.js";
-const { User } = db.models;
+import db from "../model/index.js";
+const { user: User } = db;
 
 const register = async (req, res) => {
-  console.log(req);
+  console.log(User);
   const { email, password } = req.body;
-  if (await User.findOne({ where: { email: email } })) {
+
+  if (!email || !password) {
+    throw new BadRequestError("Please provide username and password");
+  } else if (await User.findOne({ where: { email: email } })) {
     res.json({
       status: false,
       message: `user with email: ${email} exists`,
     });
-  }
-  if (req.body) {
+  } else {
     let hashedPassword = await bcrypt.hash(password, 8);
     await User.create({ ...req.body, password: hashedPassword });
     res
       .status(StatusCodes.CREATED)
-      .json({ status: 201, message: "User Created Successfully" });
-  } else {
-    throw new BadRequestError("Please provide username and password");
+      .json({ status: true, message: "User Created Successfully" });
   }
 };
 
@@ -46,7 +46,7 @@ const login = async (req, res) => {
     return res.status(StatusCodes.OK).json({
       status: true,
       message: "Login successful",
-      data: { user: { ...omitPassword(user.get()) }, token: token, id },
+      data: { user: { ...omitPassword(user.get()) }, token: token },
     });
   }
 };

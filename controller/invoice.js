@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
-import { db } from "../model/index.js";
-const { Invoice, Client } = db.models;
+import db from "../model/index.js";
+const { client: Client, invoice: Invoice } = db;
 const getInvoiceByDueDate = async (days) => {
   const currentDate = new Date();
   const dueDateThreshold = new Date(currentDate);

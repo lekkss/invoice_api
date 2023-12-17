@@ -1,10 +1,17 @@
-import mysql from "mysql2";
-import { dbConfig } from "../config/db-config.js";
+"use strict";
 import Sequelize from "sequelize";
+import mysql from "mysql2";
+import fs from "fs";
+import path from "path";
+import { dbConfig } from "../config/db-config.js";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const basename = path.basename(__filename);
 const { DATABASE, DIALECT, HOST, PASSWORD, USER } = dbConfig;
-import User from "./user.js";
-import Client from "./client.js";
-import Invoice from "./invoice.js";
+const db = {};
 
 //Create database if not exist
 const createDatabaseConnection = async () => {
@@ -26,41 +33,32 @@ const sequelize = new Sequelize(DATABASE, USER, PASSWORD, {
   host: HOST,
 });
 
+const modelPromises = fs
+  .readdirSync(__dirname)
+  .filter(
+    (file) =>
+      file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
+  )
+  .map((file) => import(`file://${path.join(__dirname, file)}`));
+
+// Wait for all model imports to resolve
+const modelModules = await Promise.all(modelPromises);
+
+// Iterate through the resolved modules and initialize models
+modelModules.forEach((module) => {
+  const model = module.default(sequelize, Sequelize.DataTypes);
+  db[model.name] = model;
+});
+
+// Associate models
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
 //initiate connection
-const db = {};
 db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-db.models = {
-  User: User(sequelize, Sequelize.DataTypes),
-  Client: Client(sequelize, Sequelize.DataTypes),
-  Invoice: Invoice(sequelize, Sequelize.DataTypes),
-};
-
-db.models.User.hasMany(db.models.Client, {
-  foreignKey: "user_id",
-});
-db.models.Client.belongsTo(db.models.User, {
-  foreignKey: "user_id",
-  onDelete: "CASCADE",
-});
-
-db.models.User.hasMany(db.models.Invoice, {
-  foreignKey: "user_id",
-});
-
-db.models.Client.hasMany(db.models.Invoice, {
-  foreignKey: "client_id",
-});
-
-db.models.Invoice.belongsTo(db.models.User, {
-  foreignKey: "user_id",
-  targetKey: "uuid",
-  onDelete: "CASCADE",
-});
-db.models.Invoice.belongsTo(db.models.Client, {
-  foreignKey: "client_id",
-  targetKey: "uuid",
-  onDelete: "CASCADE",
-});
-
-export { db };
+export default db;

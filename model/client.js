@@ -1,26 +1,22 @@
-export default (sequelize, DataTypes) => {
+export default (sequelize, Sequelize) => {
   const Client = sequelize.define(
     "client",
     {
       uuid: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
-      },
-      user_id: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
       },
       first_name: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       last_name: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       email: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true,
         validate: {
@@ -30,20 +26,23 @@ export default (sequelize, DataTypes) => {
         },
       },
       phone: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
     },
     {
       freezeTableName: true,
-      indexes: [
-        {
-          unique: true,
-          fields: ["uuid"],
-        },
-      ],
     }
   );
+  Client.associate = (models) => {
+    Client.belongsTo(models.user, {
+      foreignKey: "user_id",
+      onDelete: "CASCADE",
+    });
+    Client.hasMany(models.invoice, {
+      foreignKey: "client_id",
+    });
+  };
 
   return Client;
 };

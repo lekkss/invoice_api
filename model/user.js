@@ -1,7 +1,6 @@
 export default (sequelize, DataTypes) => {
   const User = sequelize.define(
     "user",
-
     {
       uuid: {
         type: DataTypes.UUID,
@@ -51,6 +50,15 @@ export default (sequelize, DataTypes) => {
       },
     }
   );
+
+  User.associate = (models) => {
+    User.hasMany(models.invoice, {
+      foreignKey: "user_id",
+    });
+    User.hasMany(models.client, {
+      foreignKey: "user_id",
+    });
+  };
 
   return User;
 };

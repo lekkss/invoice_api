@@ -4,8 +4,7 @@ dotenv.config();
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { db } from "./model/index.js";
-import nodemailer from "nodemailer";
+import db from "./model/index.js";
 import "./helper/cronJob.js";
 // Error handlers
 import notFound from "./middleware/not-found.js";
@@ -29,18 +28,6 @@ app.use(express.json());
 app.use("/auth", authRoute);
 app.use("/profile", userRoute);
 app.use("/clients", auth, clientRoute);
-app.post("/email", (req, res) => {
-  const to = req.body.email;
-  const subject = "Welcome to ABC Website!";
-  const html = "<b>Hello world?</b>";
-
-  const info = sendEmail(to, subject, html);
-  return res.status(201).json({
-    msg: "Email sent",
-    info: info.messageId,
-    preview: nodemailer.getTestMessageUrl(info),
-  });
-});
 
 // initializing express middlewares
 app.use(notFound);

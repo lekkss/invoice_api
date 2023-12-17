@@ -1,5 +1,5 @@
-import { db } from "../model/index.js";
-const { User, Client, Invoice } = db.models;
+import db from "../model/index.js";
+const { user: User, client: Client } = db;
 
 const getUser = async (req, res) => {
   const id = req.user.id;
@@ -8,7 +8,7 @@ const getUser = async (req, res) => {
 };
 //helper to find user with id
 async function findUser(id) {
-  const user = await User.findByPk(id);
+  const user = await User.findOne({ where: { id: id }, include: [Client] });
   if (!user) throw new BadRequestError(`User with does not exist`);
   return user;
 }

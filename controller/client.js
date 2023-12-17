@@ -1,9 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import { db } from "../model/index.js";
 import BadRequestError from "../errors/bad-request.js";
 import { sendEmail } from "../util/sendEmail.js";
 import { getAuthorizationUrl } from "../util/paystack.js";
-const { Client, Invoice } = db.models;
+import db from "../model/index.js";
+const { client: Client, invoice: Invoice } = db;
 
 const createClient = async (req, res) => {
   const id = req.user.id;
@@ -27,11 +27,7 @@ const getAllClients = async (req, res) => {
   const id = req.user.id;
   const client = await Client.findAll({
     where: { user_id: id },
-    include: [
-      {
-        model: Invoice,
-      },
-    ],
+    include: [Invoice],
   });
   res.json({
     status: StatusCodes.OK,
@@ -53,9 +49,9 @@ const getClient = async (req, res) => {
 const createInvoice = async (req, res) => {
   const { id } = req.params;
   const { amount } = req.body;
-  const userId = req.user.id;
-  const user = await findClientUUID(id, userId);
-  const { email, first_name, last_name } = user.dataValues;
+  const clientId = req.user.id;
+  const client = await findClientUUID(id, clientId);
+  const { email, first_name, last_name, id: client_id } = client.dataValues;
   const to = email;
   const subject = `New infoive created for ${first_name}`;
   let url;
@@ -70,8 +66,8 @@ const createInvoice = async (req, res) => {
     const invoice = await Invoice.create({
       ...req.body,
       payment_link: url,
-      user_id: userId,
-      client_id: id,
+      user_id: clientId,
+      client_id: client_id,
     });
     const { payment_link, due_date } = invoice.dataValues;
     const name = `${first_name} ${last_name}`;
@@ -101,9 +97,12 @@ const createInvoice = async (req, res) => {
 };
 
 const getAllInvoices = async (req, res) => {
+  const user_id = req.user.id;
   const { id } = req.params;
+  const c = await findClientUUID(id, user_id);
+  const { id: client_id } = c.dataValues;
   const client = await Invoice.findAll({
-    where: { client_id: id },
+    where: { client_id: client_id },
   });
   res.json({
     status: StatusCodes.OK,
