@@ -28,7 +28,7 @@ const sendEmail = async (to, subject, name, link, amount, date, template) => {
   transporter.use("compile", hbs(handlebarOptions));
 
   const message = {
-    from: "noreply@lekkssservice.com",
+    from: process.env.GMAIL_APP_FROM,
     to,
     subject,
     template,

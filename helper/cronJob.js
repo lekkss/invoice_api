@@ -7,9 +7,10 @@ export const job = new CronJob(
   async function () {
     const invoices = await getInvoiceByDueDate(3);
     for (const invoice of invoices) {
+      const invoiceData = invoice.dataValues;
       try {
-        const to = invoice.dataValues.client.dataValues.email;
-        const name = `${invoice.dataValues.client.dataValues.first_name} ${invoice.dataValues.client.dataValues.last_name}`;
+        const to = invoiceData.client.dataValues.email;
+        const name = `${invoiceData.client.dataValues.first_name} ${invoiceData.client.dataValues.last_name}`;
         // console.log(to, name);
         const subject = `Invoice Payment Reminder`;
         // console.log(invoice);
@@ -17,9 +18,9 @@ export const job = new CronJob(
           to,
           subject,
           name,
-          invoice.dataValues.payment_link,
-          invoice.dataValues.due_date,
-          invoice.dataValues.amount / 100,
+          invoiceData.payment_link,
+          invoiceData.due_date,
+          invoiceData.amount / 100,
           "invoice"
         );
       } catch (error) {
