@@ -9,10 +9,7 @@ const createClient = async (req, res) => {
   const id = req.user.id;
   const { email } = req.body;
   if (await Client.findOne({ where: { email: email } })) {
-    res.json({
-      status: false,
-      message: `Client with email: ${email} exists`,
-    });
+    throw new BadRequestError(`Client with email: ${email} exists`);
   }
 
   await Client.create({
@@ -30,7 +27,7 @@ const getAllClients = async (req, res) => {
     include: [Invoice],
   });
   res.json({
-    status: StatusCodes.OK,
+    status: true,
     message: "Clients Fetched Successfully",
     data: client,
   });

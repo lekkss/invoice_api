@@ -8,10 +8,7 @@ const { user: User } = db;
 const register = async (req, res) => {
   const { email, password } = req.body;
   if (await User.findOne({ where: { email: email } })) {
-    res.json({
-      status: false,
-      message: `user with email: ${email} exists`,
-    });
+    throw new BadRequestError(`user with email: ${email} exists`);
   } else {
     let hashedPassword = await bcrypt.hash(password, 8);
     await User.create({ ...req.body, password: hashedPassword });
@@ -24,10 +21,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!(await User.findOne({ where: { email: email } }))) {
-    res.json({
-      status: false,
-      message: `email does not exist`,
-    });
+    throw new BadRequestError("Email does not exist");
   } else {
     const user = await User.scope("withPassword").findOne({
       where: { email },
