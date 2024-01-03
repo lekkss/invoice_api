@@ -53,7 +53,7 @@ const createInvoice = async (req, res) => {
   const client = await findClientUUID(id, clientId);
   const { email, first_name, last_name, id: client_id } = client.dataValues;
   const to = email;
-  const subject = `New infoive created for ${first_name}`;
+  const subject = `New invoice created for ${first_name}`;
   let url;
   try {
     await getAuthorizationUrl(email, amount)

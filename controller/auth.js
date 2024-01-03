@@ -6,9 +6,7 @@ import db from "../model/index.js";
 const { user: User } = db;
 
 const register = async (req, res) => {
-  console.log(User);
   const { email, password } = req.body;
-
   if (!email || !password) {
     throw new BadRequestError("Please provide username and password");
   } else if (await User.findOne({ where: { email: email } })) {
