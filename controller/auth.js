@@ -7,9 +7,7 @@ const { user: User } = db;
 
 const register = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    throw new BadRequestError("Please provide username and password");
-  } else if (await User.findOne({ where: { email: email } })) {
+  if (await User.findOne({ where: { email: email } })) {
     res.json({
       status: false,
       message: `user with email: ${email} exists`,
@@ -25,9 +23,6 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    throw new BadRequestError("Please provide email and password");
-  }
   if (!(await User.findOne({ where: { email: email } }))) {
     res.json({
       status: false,
