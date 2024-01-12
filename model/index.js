@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const basename = path.basename(__filename);
-const { DATABASE, DIALECT, HOST, PASSWORD, USER } = dbConfig;
+const { DATABASE, DIALECT, HOST, PASSWORD, USER, PORT } = dbConfig;
 const db = {};
 
 //Create database if not exist
@@ -20,9 +20,10 @@ const createDatabaseConnection = async () => {
       host: HOST,
       user: USER,
       password: PASSWORD,
+      port: PORT,
     })
     .promise();
-  await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DATABASE}\`;`);
+  // await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DATABASE}\`;`);
 };
 
 // Create the database before establishing the Sequelize connection

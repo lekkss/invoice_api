@@ -11,16 +11,14 @@ export const job = new CronJob(
       try {
         const to = invoiceData.client.dataValues.email;
         const name = `${invoiceData.client.dataValues.first_name} ${invoiceData.client.dataValues.last_name}`;
-        // console.log(to, name);
         const subject = `Invoice Payment Reminder`;
-        // console.log(invoice);
         sendEmail(
           to,
           subject,
           name,
           invoiceData.payment_link,
-          invoiceData.due_date,
           invoiceData.amount / 100,
+          invoiceData.due_date,
           "invoice"
         );
       } catch (error) {
